@@ -1,7 +1,7 @@
 {
-  "name": "starter-template",
+  "name": "online-recurring-payments",
   "version": "1.0.0",
-  "description": "Global Payments SDK starter template for multiple languages",
+  "description": "Global Payments GP API recurring payments example for multiple languages",
   "type": "commonjs",
   "scripts": {
     "start": "node nodejs/server.js",
@@ -9,9 +9,10 @@
   },
   "keywords": [
     "payments",
-    "sdk",
-    "template",
-    "starter"
+    "recurring-payments",
+    "subscriptions",
+    "gp-api",
+    "global-payments"
   ],
   "author": "",
   "license": "ISC",

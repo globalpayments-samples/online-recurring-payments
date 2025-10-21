@@ -8,6 +8,10 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://globalpayments-samples.github.io/css/styles.css">
+    <style>
+        .credit-card-card-expiration, .credit-card-card-cvv { margin: 0 !important; }
+        .gp-hidden { display: none !important; }
+    </style>
 </head>
 <body>
     <!-- Header -->
@@ -37,111 +41,11 @@
         <!-- Tabs -->
         <div class="gp-tabs">
             <div class="gp-tab-list">
-                <button class="gp-tab-button active" data-tab="payment-form">Payment Form</button>
-                <button class="gp-tab-button" data-tab="tokenization">Tokenization</button>
-                <button class="gp-tab-button" data-tab="webhooks">Webhooks</button>
-                <button class="gp-tab-button" data-tab="recurring">Recurring Payments</button>
-            </div>
-
-            <!-- Payment Form Tab -->
-            <div class="gp-tab-content active" id="payment-form">
-                <div class="gp-card">
-                    <div class="gp-card-header">
-                        <h2 class="gp-card-title">Credit Card Payment Form</h2>
-                        <p class="gp-card-description">
-                            Secure payment processing using Global Payments tokenization with client-side form validation.
-                        </p>
-                    </div>
-                    
-                    <form id="payment-form" class="gp-form" action="/process-payment" method="POST">
-                        <div class="gp-form-group">
-                            <label for="amount" class="gp-label">Amount ($):</label>
-                            <input type="number" id="amount" name="amount" class="gp-input" min="0.01" step="0.01" value="10.00" required>
-                        </div>
-                        
-                        <div class="gp-form-group">
-                            <label for="billing_zip" class="gp-label">Billing Zip Code:</label>
-                            <input type="text" id="billing_zip" name="billing_zip" class="gp-input" placeholder="12345" required>
-                        </div>
-
-                        <div class="gp-form-group">
-                            <label class="gp-label">Credit Card Information:</label>
-                            <div id="credit-card"></div>
-                        </div>
-
-                        <button type="submit" class="gp-button gp-button-primary gp-button-full">
-                            Process Payment
-                        </button>
-                    </form>
-                </div>
-            </div>
-
-            <!-- Tokenization Tab -->
-            <div class="gp-tab-content" id="tokenization">
-                <div class="gp-card">
-                    <div class="gp-card-header">
-                        <h2 class="gp-card-title">Card Tokenization</h2>
-                        <p class="gp-card-description">
-                            Securely tokenize payment methods for future use without storing sensitive card data.
-                        </p>
-                    </div>
-                    
-                    <div class="gp-alert gp-alert-info">
-                        <strong>Info:</strong> Tokens can be stored securely and used for future transactions without handling raw card data.
-                    </div>
-
-                    <form id="tokenization-form" class="gp-form">
-                        <div class="gp-form-group">
-                            <label class="gp-label">Card Information for Tokenization:</label>
-                            <div id="credit-card-token"></div>
-                        </div>
-
-                        <button type="submit" class="gp-button gp-button-primary gp-button-full">
-                            Generate Token
-                        </button>
-                    </form>
-
-                    <div id="token-result" class="gp-hidden">
-                        <h3 class="gp-card-title gp-mt-lg">Generated Token:</h3>
-                        <div class="gp-code-block" id="token-display"></div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Webhooks Tab -->
-            <div class="gp-tab-content" id="webhooks">
-                <div class="gp-card">
-                    <div class="gp-card-header">
-                        <h2 class="gp-card-title">Webhook Integration</h2>
-                        <p class="gp-card-description">
-                            Configure and test webhook endpoints for real-time payment notifications.
-                        </p>
-                    </div>
-                    
-                    <div class="gp-code-block">
-// Example webhook handler
-app.post('/webhook', (req, res) => {
-    const signature = req.headers['x-gp-signature'];
-    const payload = req.body;
-    
-    // Verify webhook signature
-    if (verifySignature(payload, signature)) {
-        handlePaymentEvent(payload);
-        res.status(200).send('OK');
-    } else {
-        res.status(400).send('Invalid signature');
-    }
-});
-                    </div>
-
-                    <div class="gp-alert gp-alert-warning">
-                        <strong>Security:</strong> Always verify webhook signatures to ensure requests are from Global Payments.
-                    </div>
-                </div>
+                <button class="gp-tab-button active" data-tab="recurring">Recurring Payments</button>
             </div>
 
             <!-- Recurring Payments Tab -->
-            <div class="gp-tab-content" id="recurring">
+            <div class="gp-tab-content active" id="recurring">
                 <div class="gp-card">
                     <div class="gp-card-header">
                         <h2 class="gp-card-title">Recurring Payments</h2>
@@ -149,14 +53,65 @@ app.post('/webhook', (req, res) => {
                             Set up subscription billing and recurring payment schedules.
                         </p>
                     </div>
-                    
+
                     <form id="recurring-form" class="gp-form">
+                        <h3>Customer Information</h3>
+                        <div class="gp-form-row">
+                            <div class="gp-form-group">
+                                <label for="first_name" class="gp-label">First Name:</label>
+                                <input type="text" id="first_name" name="first_name" class="gp-input" value="Jane" required>
+                            </div>
+                            <div class="gp-form-group">
+                                <label for="last_name" class="gp-label">Last Name:</label>
+                                <input type="text" id="last_name" name="last_name" class="gp-input" value="Doe" required>
+                            </div>
+                        </div>
+
+                        <div class="gp-form-group">
+                            <label for="email" class="gp-label">Email:</label>
+                            <input type="email" id="email" name="email" class="gp-input" value="jane.doe@example.com" required>
+                        </div>
+
+                        <div class="gp-form-group">
+                            <label for="phone" class="gp-label">Phone Number:</label>
+                            <input type="tel" id="phone" name="phone" class="gp-input" value="5551112222" required>
+                        </div>
+
+                        <h3>Billing Address</h3>
+                        <div class="gp-form-group">
+                            <label for="street_address" class="gp-label">Street Address:</label>
+                            <input type="text" id="street_address" name="street_address" class="gp-input" value="1 Example Way" required>
+                        </div>
+
+                        <div class="gp-form-row">
+                            <div class="gp-form-group">
+                                <label for="city" class="gp-label">City:</label>
+                                <input type="text" id="city" name="city" class="gp-input" value="Jeffersonville" required>
+                            </div>
+                            <div class="gp-form-group">
+                                <label for="state" class="gp-label">State/Province:</label>
+                                <input type="text" id="state" name="state" class="gp-input" value="IN" required>
+                            </div>
+                        </div>
+
+                        <div class="gp-form-row">
+                            <div class="gp-form-group">
+                                <label for="billing_zip" class="gp-label">Zip/Postal Code:</label>
+                                <input type="text" id="billing_zip" name="billing_zip" class="gp-input" value="47130" required>
+                            </div>
+                            <div class="gp-form-group">
+                                <label for="country" class="gp-label">Country:</label>
+                                <input type="text" id="country" name="country" class="gp-input" value="USA" required>
+                            </div>
+                        </div>
+
+                        <h3>Subscription Details</h3>
                         <div class="gp-form-row">
                             <div class="gp-form-group">
                                 <label for="subscription-amount" class="gp-label">Monthly Amount ($):</label>
                                 <input type="number" id="subscription-amount" name="subscription-amount" class="gp-input" min="1.00" step="0.01" value="29.99" required>
                             </div>
-                            
+
                             <div class="gp-form-group">
                                 <label for="billing-cycle" class="gp-label">Billing Cycle:</label>
                                 <select id="billing-cycle" name="billing-cycle" class="gp-select" required>
@@ -167,14 +122,46 @@ app.post('/webhook', (req, res) => {
                             </div>
                         </div>
 
-                        <div class="gp-form-group">
-                            <label class="gp-label">Payment Method:</label>
-                            <div id="credit-card-recurring"></div>
+                                                <!-- Test Card Helper -->
+                        <div class="gp-form-group" style="background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 16px; margin-bottom: 20px;">
+                            <label for="test-card-select" class="gp-label" style="margin-bottom: 8px;">
+                                🧪 Use Global Payments Test Card:
+                            </label>
+                            <select id="test-card-select" class="gp-select">
+                                <option value="">Select a test card...</option>
+                                <option value="visa">Visa Success - 4263970000005262</option>
+                                <option value="mastercard">Mastercard Success - 5425230000004415</option>
+                                <option value="amex">American Express Success - 374101000000608</option>
+                                <option value="discover">Discover Success - 6011000000000087</option>
+                                <option value="jcb">JCB Success - 3566000000000000</option>
+                                <option value="diners">Diners Club Success - 36256000000725</option>
+                            </select>
+                            <small style="color: #6c757d; font-size: 12px; margin-top: 4px; display: block;">
+                                These are official Global Payments test cards. Select to auto-fill the payment form.
+                            </small>
                         </div>
 
-                        <button type="submit" class="gp-button gp-button-primary gp-button-full">
-                            Set Up Subscription
-                        </button>
+                        <!-- Test Card Data Display -->
+                        <div id="test-card-data" class="gp-hidden" style="background: #e8f4fd; color: #0c5460; border: 1px solid #bee5eb; border-radius: 8px; padding: 16px; margin-bottom: 20px;">
+                            <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                                <div>
+                                    <strong id="test-card-status">📋 Selected Test Card Data:</strong>
+                                    <div id="test-card-details" style="font-family: monospace; margin-top: 12px; padding: 12px; background: #f8f9fa; border-radius: 4px; font-size: 14px;">
+                                        <!-- Card details will be inserted here -->
+                                    </div>
+                                </div>
+                                <button type="button" onclick="hideTestCardData()" style="background: none; border: none; font-size: 18px; cursor: pointer; color: #0c5460; padding: 0; margin-left: 16px;">&times;</button>
+                            </div>
+                        </div>
+
+                        <h3>Payment Information</h3>
+                        <div class="gp-form-group">
+                            <label class="gp-label">Payment Method:</label>
+                            <div id="credit-card"></div>
+                        </div>
+
+                        <!-- Hidden field to store the token -->
+                        <input type="hidden" id="payment-token" name="paymentToken">
                     </form>
                 </div>
             </div>
@@ -208,6 +195,368 @@ app.post('/webhook', (req, res) => {
         </div>
     </footer>
 
-    <script src="https://globalpayments-samples.github.io/js/script.js"></script>
+    <!-- Global Payments JavaScript SDK -->
+    <script src="https://js.globalpay.com/4.1.11/globalpayments.js"></script>
+    <script>
+        // API base URL
+        const API_BASE = window.location.origin;
+
+        // Global Payments configuration
+        let gpConfig = null;
+        let cardForm = null;
+
+        // Global Payments test cards configuration
+        const testCards = {
+            visa: {
+                number: '4263970000005262',
+                cvv: '123',
+                expiry: '12/2025',
+                brand: 'Visa',
+                description: 'Visa Success'
+            },
+            mastercard: {
+                number: '5425230000004415',
+                cvv: '123',
+                expiry: '12/2025',
+                brand: 'Mastercard',
+                description: 'Mastercard Success'
+            },
+            amex: {
+                number: '374101000000608',
+                cvv: '1234',
+                expiry: '12/2025',
+                brand: 'American Express',
+                description: 'American Express Success'
+            },
+            discover: {
+                number: '6011000000000087',
+                cvv: '123',
+                expiry: '12/2025',
+                brand: 'Discover',
+                description: 'Discover Success'
+            },
+            jcb: {
+                number: '3566000000000000',
+                cvv: '123',
+                expiry: '12/2025',
+                brand: 'JCB',
+                description: 'JCB Success'
+            },
+            diners: {
+                number: '36256000000725',
+                cvv: '123',
+                expiry: '12/2025',
+                brand: 'Diners Club',
+                description: 'Diners Club Success'
+            }
+        };
+
+        // Helper function to ensure GlobalPayments is loaded
+        function ensureGlobalPaymentsReady() {
+            return new Promise((resolve, reject) => {
+                if (typeof GlobalPayments !== 'undefined') {
+                    resolve();
+                } else {
+                    let attempts = 0;
+                    const checkInterval = setInterval(() => {
+                        attempts++;
+                        if (typeof GlobalPayments !== 'undefined') {
+                            clearInterval(checkInterval);
+                            resolve();
+                        } else if (attempts >= 10) {
+                            clearInterval(checkInterval);
+                            reject(new Error('GlobalPayments failed to initialize'));
+                        }
+                    }, 500);
+                }
+            });
+        }
+
+        // Initialize Global Payments on page load
+        async function initializePaymentForm() {
+            const form = document.getElementById('recurring-form');
+            form.style.opacity = '0.5';
+            form.style.pointerEvents = 'none';
+
+            try {
+                await ensureGlobalPaymentsReady();
+                const config = await fetchWithRetry(`${API_BASE}/config.php`);
+
+                if (config.success) {
+                    gpConfig = config.data;
+
+                    // Configure Global Payments
+                    if (typeof GlobalPayments !== 'undefined') {
+                        GlobalPayments.configure({
+                            accessToken: gpConfig.accessToken,
+                            env: "sandbox",
+                            fieldValidation: { enabled: true }
+                        });
+
+                        // Create the card form
+                        cardForm = GlobalPayments.creditCard.form('#credit-card', {
+                            style: "gp-default"
+                        });
+
+                        cardForm.on('token-success', (resp) => {
+                            document.getElementById('payment-token').value = resp.paymentReference;
+                            submitRecurringPayment(resp.details);
+                        });
+
+                        cardForm.on('token-error', (error) => {
+                            console.error('Tokenization error:', error);
+                            displayError(`Error tokenizing card: ${error.message}`);
+                        });
+
+                        // Enable form when card form is ready
+                        cardForm.ready(() => {
+                            // Auto-apply stored test card data if available
+                            if (window.selectedTestCard) {
+                                const cardData = window.selectedTestCard;
+                                try {
+                                    cardForm.frames["card-number"].setValue(cardData.number);
+                                    cardForm.frames["card-expiration"].setValue(cardData.expiry.replace('/', ''));
+                                    cardForm.frames["card-cvv"].setValue(cardData.cvv);
+                                    cardForm.frames["card-holder-name"].setValue('Test User');
+                                } catch (error) {
+                                    console.warn('Failed to re-apply test card data:', error);
+                                }
+                            }
+
+                            form.style.opacity = '1';
+                            form.style.pointerEvents = 'auto';
+                            console.log('Recurring payment form initialized successfully');
+                        });
+
+                    } else {
+                        throw new Error('GlobalPayments SDK not available');
+                    }
+
+                } else {
+                    console.error('Failed to load configuration:', config.message);
+                    throw new Error('Configuration failed: ' + (config.message || 'Unknown error'));
+                }
+            } catch (error) {
+                console.error('Payment form initialization failed:', error);
+                displayError(`Unable to initialize payment form. Please check your configuration and refresh the page.<br><small>Details: ${error.message}</small>`);
+                form.style.opacity = '1';
+                form.style.pointerEvents = 'auto';
+            }
+        }
+
+        // Initialize application
+        document.addEventListener('DOMContentLoaded', function() {
+            initializePaymentForm();
+            setupEventHandlers();
+        });
+
+        // Setup event handlers
+        function setupEventHandlers() {
+            // Test card selection
+            document.getElementById('test-card-select').addEventListener('change', handleTestCardSelect);
+
+            // Recurring form submission
+            document.getElementById('recurring-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                if (cardForm) {
+                    cardForm.tokenize();
+                }
+            });
+
+            // Real-time uppercase conversion for state field
+            const stateInput = document.getElementById('state');
+            if (stateInput) {
+                stateInput.addEventListener('input', function(e) {
+                    e.target.value = e.target.value.toUpperCase();
+                });
+            }
+        }
+
+
+
+        // Handle test card selection
+        function handleTestCardSelect(event) {
+            const selectedCard = event.target.value;
+            if (!selectedCard || !cardForm) return;
+
+            const cardData = testCards[selectedCard];
+            if (cardData) {
+                try {
+                    resetForm();
+                    window.selectedTestCard = cardData;
+                    showTestCardData(cardData, true);
+                } catch (error) {
+                    console.warn('Test card selection failed:', error);
+                    showTestCardData(cardData, false);
+                }
+                event.target.value = '';
+            }
+        }
+
+        // Show test card data
+        function showTestCardData(cardData, autoFillWorked) {
+            const testCardElement = document.getElementById('test-card-data');
+            const statusElement = document.getElementById('test-card-status');
+            const detailsElement = document.getElementById('test-card-details');
+
+            const statusMessage = autoFillWorked ?
+                '✅ Test Card Selected:' :
+                '📋 Selected Test Card Data:';
+
+            statusElement.textContent = statusMessage;
+            detailsElement.innerHTML = `
+                <strong>Card Number:</strong> ${cardData.number}<br>
+                <strong>Expiration:</strong> ${cardData.expiry}<br>
+                <strong>CVV:</strong> ${cardData.cvv}<br>
+                <strong>Brand:</strong> ${cardData.brand}
+            `;
+
+            testCardElement.classList.remove('gp-hidden');
+        }
+
+        // Hide test card data
+        function hideTestCardData() {
+            document.getElementById('test-card-data').classList.add('gp-hidden');
+        }
+
+        // Reset form and reinitialize
+        function resetForm() {
+            try {
+                window.selectedTestCard = null;
+                document.getElementById('payment-token').value = '';
+                document.querySelectorAll('#credit-card>*').forEach((el) => {
+                    el.parentElement.removeChild(el);
+                });
+                cardForm.dispose();
+                initializePaymentForm();
+            } catch (error) {
+                console.warn('Form reset failed:', error);
+            }
+        }
+
+
+        // Submit recurring payment
+        async function submitRecurringPayment(cardDetails) {
+            const token = document.getElementById('payment-token').value;
+
+            if (!token) {
+                displayError('No token received from tokenization');
+                return;
+            }
+
+            // Collect all form data
+            const recurringData = {
+                payment_token: token,
+                is_recurring: true,
+
+                // Customer information
+                first_name: document.getElementById('first_name').value,
+                last_name: document.getElementById('last_name').value,
+                email: document.getElementById('email').value,
+                phone: document.getElementById('phone').value,
+
+                // Billing address
+                street_address: document.getElementById('street_address').value,
+                city: document.getElementById('city').value,
+                state: document.getElementById('state').value.toUpperCase(),
+                billing_zip: document.getElementById('billing_zip').value,
+                country: document.getElementById('country').value,
+
+                // Subscription details
+                amount: parseFloat(document.getElementById('subscription-amount').value),
+                frequency: document.getElementById('billing-cycle').value,
+                start_date: new Date().toISOString().split('T')[0],
+                currency: 'USD',
+
+                // Card details for display
+                cardDetails: cardDetails
+            };
+
+            console.log('Recurring payment data:', recurringData);
+
+            try {
+                const response = await fetch(`${API_BASE}/process-payment.php`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(recurringData)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    displaySuccess(result.message + ': ' + result.data.transaction_id || 'Subscription set up successfully!');
+                    hideError();
+
+                    // Reset form after successful submission
+                    setTimeout(() => {
+                        document.getElementById('recurring-form').reset();
+                    }, 2000);
+                } else {
+                    displayError(result.message || 'Subscription setup failed');
+                }
+            } catch (error) {
+                displayError('Error setting up subscription: ' + error.message);
+            }
+        }
+
+        // Display success message
+        function displaySuccess(message) {
+            const successDiv = document.createElement('div');
+            successDiv.className = 'gp-alert gp-alert-success';
+            successDiv.style.marginTop = '20px';
+            successDiv.innerHTML = `<strong>Success!</strong> ${message}`;
+
+            const form = document.getElementById('recurring-form');
+            const existingAlert = form.parentElement.querySelector('.gp-alert');
+            if (existingAlert) {
+                existingAlert.remove();
+            }
+
+            form.parentElement.appendChild(successDiv);
+            successDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        // Display error message
+        function displayError(message) {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'gp-alert gp-alert-error';
+            errorDiv.style.marginTop = '20px';
+            errorDiv.innerHTML = `<strong>Error:</strong> ${message}`;
+
+            const form = document.getElementById('recurring-form');
+            const existingAlert = form.parentElement.querySelector('.gp-alert');
+            if (existingAlert) {
+                existingAlert.remove();
+            }
+
+            form.parentElement.appendChild(errorDiv);
+            errorDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        // Hide error message
+        function hideError() {
+            const form = document.getElementById('recurring-form');
+            const existingAlert = form.parentElement.querySelector('.gp-alert-error');
+            if (existingAlert) {
+                existingAlert.remove();
+            }
+        }
+
+        // Fetch with retry logic
+        async function fetchWithRetry(url, maxAttempts = 3) {
+            for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+                try {
+                    const response = await fetch(url);
+                    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                    return await response.json();
+                } catch (error) {
+                    if (attempt === maxAttempts) throw error;
+                    await new Promise(resolve => setTimeout(resolve, Math.pow(2, attempt) * 100));
+                }
+            }
+        }
+    </script>
 </body>
 </html>
