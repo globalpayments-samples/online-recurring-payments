@@ -1,7 +1,7 @@
 {
-  "name": "card-payments",
+  "name": "recurring-payments",
   "version": "1.0.0",
-  "description": "Card payments example using Node.js",
+  "description": "Recurring payments example using Node.js and GP API",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
@@ -10,6 +10,6 @@
   "dependencies": {
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
-    "globalpayments-api": "^3.10.6"
+    "globalpayments-api": "^3.10.7"
   }
 }

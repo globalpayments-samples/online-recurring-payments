@@ -3,11 +3,10 @@
 declare(strict_types=1);
 
 /**
- * Card Payment Processing Script
+ * Recurring Payment Processing Script - GP API
  *
- * This script demonstrates card payment processing using the Global Payments SDK.
- * It handles tokenized card data and billing information to process payments
- * securely through the Global Payments API.
+ * This script demonstrates recurring payment schedule creation using the Global Payments GP API SDK.
+ * It handles tokenized card data and creates recurring payment schedules with customer information.
  *
  * PHP version 7.4 or higher
  *
@@ -19,117 +18,102 @@ declare(strict_types=1);
  */
 
 require_once 'vendor/autoload.php';
+require_once 'PaymentUtils.php';
 
-use Dotenv\Dotenv;
-use GlobalPayments\Api\Entities\Address;
 use GlobalPayments\Api\Entities\Exceptions\ApiException;
-use GlobalPayments\Api\PaymentMethods\CreditCardData;
-use GlobalPayments\Api\ServiceConfigs\Gateways\PorticoConfig;
-use GlobalPayments\Api\ServicesContainer;
 
 ini_set('display_errors', '0');
 
-/**
- * Configure the SDK
- *
- * Sets up the Global Payments SDK with necessary credentials and settings
- * loaded from environment variables.
- *
- * @return void
- */
-function configureSdk(): void
-{
-    $dotenv = Dotenv::createImmutable(__DIR__);
-    $dotenv->load();
-
-    $config = new PorticoConfig();
-    $config->secretApiKey = $_ENV['SECRET_API_KEY'];
-    $config->developerId = '000000';
-    $config->versionNumber = '0000';
-    $config->serviceUrl = 'https://cert.api2.heartlandportico.com';
-    
-    ServicesContainer::configureService($config);
-}
-
-/**
- * Sanitize postal code by removing invalid characters
- *
- * @param string|null $postalCode The postal code to sanitize
- *
- * @return string Sanitized postal code containing only alphanumeric
- *                characters and hyphens, limited to 10 characters
- */
-function sanitizePostalCode(?string $postalCode): string
-{
-    if ($postalCode === null) {
-        return '';
-    }
-    
-    $sanitized = preg_replace('/[^a-zA-Z0-9-]/', '', $postalCode);
-    return substr($sanitized, 0, 10);
-}
-
 // Initialize SDK configuration
-configureSdk();
+PaymentUtils::configureSdk();
+PaymentUtils::handleCORS();
 
 try {
-    // Validate required fields
-    if (!isset($_POST['payment_token'], $_POST['billing_zip'], $_POST['amount'])) {
-        throw new ApiException('Missing required fields');
+    // Parse JSON input
+    $inputData = PaymentUtils::parseJsonInput();
+
+    // Determine if this is a one-time payment or recurring schedule creation
+    $isRecurring = isset($inputData['is_recurring']) && $inputData['is_recurring'] === true;
+
+    // Validate payment token
+    if (!isset($inputData['payment_token']) || empty(trim($inputData['payment_token']))) {
+        throw new ApiException("Missing required field: payment_token");
     }
-    
+
     // Parse and validate amount
-    $amount = floatval($_POST['amount']);
+    if (!isset($inputData['amount'])) {
+        throw new ApiException("Missing required field: amount");
+    }
+
+    $amount = floatval($inputData['amount']);
     if ($amount <= 0) {
         throw new ApiException('Invalid amount');
     }
 
-    // Initialize payment data using tokenized card information
-    $card = new CreditCardData();
-    $card->token = $_POST['payment_token'];
+    if ($isRecurring) {
+        // Validate recurring-specific fields
+        $recurringFields = ['frequency', 'start_date'];
+        foreach ($recurringFields as $field) {
+            if (!isset($inputData[$field]) || empty(trim($inputData[$field]))) {
+                throw new ApiException("Missing required recurring field: $field");
+            }
+        }
 
-    // Create billing address for AVS verification
-    $address = new Address();
-    $address->postalCode = sanitizePostalCode($_POST['billing_zip']);
+        // Validate customer data
+        $customerFields = ['first_name', 'last_name', 'email'];
+        foreach ($customerFields as $field) {
+            if (!isset($inputData[$field]) || empty(trim($inputData[$field]))) {
+                throw new ApiException("Missing required customer field: $field");
+            }
+        }
 
-    // Process the payment transaction with specified amount
-    $response = $card->charge($amount)
-        ->withAllowDuplicates(true)
-        ->withCurrency('USD')
-        ->withAddress($address)
-        ->execute();
-    
-    // Verify transaction was successful
-    if ($response->responseCode !== '00') {
-        http_response_code(400);
-        echo json_encode([
-            'success' => false,
-            'message' => 'Payment processing failed',
-            'error' => [
-                'code' => 'PAYMENT_DECLINED',
-                'details' => $response->responseMessage
-            ]
-        ]);
-        exit;
+        // Prepare schedule data
+        $scheduleData = [
+            'frequency' => $inputData['frequency'],
+            'start_date' => $inputData['start_date'],
+            'end_date' => $inputData['end_date'] ?? null,
+            'number_of_payments' => $inputData['number_of_payments'] ?? null,
+            'schedule_name' => $inputData['schedule_name'] ?? 'Recurring Payment'
+        ];
+
+        // Prepare customer data
+        $customerData = [
+            'first_name' => $inputData['first_name'],
+            'last_name' => $inputData['last_name'],
+            'email' => $inputData['email'],
+            'phone' => $inputData['phone'] ?? '',
+            'street_address' => $inputData['street_address'] ?? '',
+            'city' => $inputData['city'] ?? '',
+            'state' => $inputData['state'] ?? '',
+            'billing_zip' => $inputData['billing_zip'] ?? ''
+        ];
+
+        // Create recurring schedule
+        $result = PaymentUtils::createRecurringSchedule(
+            $inputData['payment_token'],
+            $amount,
+            $inputData['currency'] ?? 'USD',
+            $scheduleData,
+            $customerData
+        );
+
+        PaymentUtils::sendSuccessResponse($result, 'Recurring payment schedule created successfully');
+    } else {
+        // Process one-time payment
+        $result = PaymentUtils::processPaymentWithToken(
+            $inputData['payment_token'],
+            $amount,
+            $inputData['currency'] ?? 'USD',
+            $inputData
+        );
+
+        PaymentUtils::sendSuccessResponse($result, 'Payment processed successfully');
     }
 
-    // Return success response with transaction ID
-    echo json_encode([
-        'success' => true,
-        'message' => 'Payment successful! Transaction ID: ' . $response->transactionId,
-        'data' => [
-            'transactionId' => $response->transactionId
-        ]
-    ]);
 } catch (ApiException $e) {
     // Handle payment processing errors
-    http_response_code(400);
-    echo json_encode([
-        'success' => false,
-        'message' => 'Payment processing failed',
-        'error' => [
-            'code' => 'API_ERROR',
-            'details' => $e->getMessage()
-        ]
-    ]);
+    PaymentUtils::sendErrorResponse(400, 'Payment processing failed: ' . $e->getMessage(), 'API_ERROR');
+} catch (Exception $e) {
+    // Handle general errors
+    PaymentUtils::sendErrorResponse(500, 'Server error: ' . $e->getMessage(), 'SERVER_ERROR');
 }
