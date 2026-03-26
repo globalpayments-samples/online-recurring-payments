@@ -208,14 +208,14 @@ This example demonstrates core implementation. For production use, implement:
 
 ## Additional Resources
 
-- [Global Payments Developer Hub](https://developer.globalpay.com/)
-- [GP API Documentation](https://developer.globalpay.com/api)
+- [Global Payments Developer Hub](https://developer.globalpayments.com/)
+- [GP API Documentation](https://developer.globalpayments.com/api/references-overview)
 - [GP API JS SDK](https://github.com/globalpayments/globalpayments-js)
 
 ## Support
 
 For issues or questions:
-- Check the [Global Payments Developer Hub](https://developer.globalpay.com/)
+- Check the [Global Payments Developer Hub](https://developer.globalpayments.com/)
 - Review language-specific README files in each directory
 - Contact Global Payments support
 

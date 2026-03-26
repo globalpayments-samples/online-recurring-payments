@@ -315,15 +315,15 @@ Before deploying to production:
 
 ## Additional Resources
 
-- [Global Payments Developer Hub](https://developer.globalpay.com/)
-- [GP API Documentation](https://developer.globalpay.com/api)
+- [Global Payments Developer Hub](https://developer.globalpayments.com/)
+- [GP API Documentation](https://developer.globalpayments.com/api/references-overview)
 - [Node.js SDK on GitHub](https://github.com/globalpayments/node-sdk)
 - [GP API JS SDK](https://github.com/globalpayments/globalpayments-js)
 
 ## Support
 
 For issues or questions:
-- Check the [Global Payments Developer Hub](https://developer.globalpay.com/)
+- Check the [Global Payments Developer Hub](https://developer.globalpayments.com/)
 - Review the [SDK documentation](https://github.com/globalpayments/node-sdk)
 - Contact Global Payments support
 
