@@ -2,12 +2,25 @@
 
 This project demonstrates recurring payment implementation using Global Payments GP API across multiple programming languages. Each implementation showcases how to set up subscription billing, manage recurring payment schedules, and process both one-time and recurring payments.
 
-## Available Implementations
+## 🌐 Available Implementations
 
+<<<<<<< Updated upstream
 - [.NET Core](./dotnet/) - ASP.NET Core web application
 - [Java](./java/) - Jakarta EE servlet-based web application
 - [Node.js](./nodejs/) - Express.js web application
 - [PHP](./php/) - PHP web application
+=======
+Each implementation provides identical functionality with language-specific best practices:
+
+| Language | Framework | Requirements | Status |
+|----------|-----------|--------------|--------|
+| **[PHP](./php/)** - ([Preview](https://githubbox.com/globalpayments-samples/online-recurring-payments/tree/main/php)) | Native PHP | PHP 7.4+, Composer | ✅ Complete |
+| **[Node.js](./nodejs/)** - ([Preview](https://githubbox.com/globalpayments-samples/online-recurring-payments/tree/main/nodejs)) | Express.js | Node.js 18+, npm | ✅ Complete |
+| **[.NET](./dotnet/)** - ([Preview](https://githubbox.com/globalpayments-samples/online-recurring-payments/tree/main/dotnet)) | ASP.NET Core | .NET 9.0+ | ✅ Complete |
+| **[Java](./java/)** - ([Preview](https://githubbox.com/globalpayments-samples/online-recurring-payments/tree/main/java)) | Jakarta EE | Java 11+, Maven | ✅ Complete |
+| **[Go](./go/)** - ([Preview](https://githubbox.com/globalpayments-samples/online-recurring-payments/tree/main/go)) | Native Go | Go 1.21+ | ✅ Complete |
+| **[Python](./python/)** - ([Preview](https://githubbox.com/globalpayments-samples/online-recurring-payments/tree/main/python)) | Flask | Python 3.9+, pip | ✅ Complete |
+>>>>>>> Stashed changes
 
 ## Features
 
