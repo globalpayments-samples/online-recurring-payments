@@ -1,228 +1,341 @@
-# Online Recurring Payments - GP API
+# Online Recurring Payments — GP API
 
-This project demonstrates recurring payment implementation using Global Payments GP API across multiple programming languages. Each implementation showcases how to set up subscription billing, manage recurring payment schedules, and process both one-time and recurring payments.
+A complete recurring payment implementation using the Global Payments GP API. Developers can set up subscription billing by capturing an initial payment with customer data, tokenizing the card server-side with `StoredCredential`, and scheduling future charges against the stored payment method — without handling raw card numbers at any point.
 
-## 🌐 Available Implementations
+Available in four languages: PHP, Node.js, .NET, and Java.
 
-Each implementation provides identical functionality with language-specific best practices:
+---
 
-| Language | Framework | Requirements | Status |
-|----------|-----------|--------------|--------|
-| **[PHP](./php/)** - ([Preview](https://githubbox.com/globalpayments-samples/online-recurring-payments/tree/main/php)) | Native PHP | PHP 7.4+, Composer | ✅ Complete |
-| **[Node.js](./nodejs/)** - ([Preview](https://githubbox.com/globalpayments-samples/online-recurring-payments/tree/main/nodejs)) | Express.js | Node.js 18+, npm | ✅ Complete |
-| **[.NET](./dotnet/)** - ([Preview](https://githubbox.com/globalpayments-samples/online-recurring-payments/tree/main/dotnet)) | ASP.NET Core | .NET 9.0+ | ✅ Complete |
-| **[Java](./java/)** - ([Preview](https://githubbox.com/globalpayments-samples/online-recurring-payments/tree/main/java)) | Jakarta EE | Java 11+, Maven | ✅ Complete |
+## Available Implementations
 
-## Features
+| Language | Framework | SDK Version | Port |
+|----------|-----------|-------------|------|
+| [**PHP**](./php/) | Built-in Server | globalpayments/php-sdk ^13.1 | 8000 |
+| [**Node.js**](./nodejs/) | Express.js | globalpayments-api ^3.10.6 | 8000 |
+| [**.NET**](./dotnet/) | ASP.NET Core | GlobalPayments.Api 9.0.16 | 8000 |
+| [**Java**](./java/) | Jakarta Servlet | globalpayments-sdk 14.2.20 | 8000 |
 
-### Recurring Payment Management
-- **StoredCredential Implementation** - Secure storage of payment methods for future recurring charges
-- **Customer Data Collection** - Comprehensive customer information capture and association
-- **Flexible Scheduling** - Support for various payment frequencies:
-  - Weekly
-  - Bi-Weekly
-  - Monthly
-  - Quarterly
-  - Yearly/Annually
-- **Initial Payment Validation** - Processes an initial charge to validate the payment method
-- **Payment Method Storage** - Stores tokenized payment methods for future use
+Preview links (runs in browser via CodeSandbox):
+- [PHP Preview](https://githubbox.com/globalpayments-samples/online-recurring-payments/tree/main/php)
+- [Node.js Preview](https://githubbox.com/globalpayments-samples/online-recurring-payments/tree/main/nodejs)
+- [.NET Preview](https://githubbox.com/globalpayments-samples/online-recurring-payments/tree/main/dotnet)
+- [Java Preview](https://githubbox.com/globalpayments-samples/online-recurring-payments/tree/main/java)
 
-### Payment Processing
-- **One-Time Payments** - Standard single payment processing
-- **Recurring Payments** - Subscription-based recurring charges
-- **GP API Integration** - Full Global Payments GP API support
-- **Client-Side Tokenization** - Secure card data handling with GP API JS SDK
-- **Access Token Generation** - Backend generates scoped tokens for frontend use
+---
 
-### Security & Compliance
-- **PCI Compliance** - Card data never touches your server
-- **Tokenization** - Client-side card tokenization using GP API
-- **Scoped Access Tokens** - Frontend tokens limited to PMT_POST_Create_Single permission
-- **Environment Variables** - Secure credential management
-- **Input Validation** - Comprehensive validation of all payment data
+## How It Works
+
+This project demonstrates the full recurring payment lifecycle: an initial charge captures the customer's card and stores it as a reusable payment method. All future charges use the stored method without prompting the customer for card details again.
+
+```
+Browser
+  │
+  ├─ GET /config ──────────────────► Server
+  │                                    └─ GP API: generate scoped access token
+  │  ◄── { accessToken } ──────────────┘
+  │
+  ├─ Hosted fields tokenize card (client-side, PCI-compliant)
+  │
+  ├─ POST /process-payment ────────► Server
+  │   {                               ├─ is_recurring: false → charge().execute()
+  │     payment_token,                └─ is_recurring: true  → charge()
+  │     amount,                                                 .withStoredCredential()
+  │     is_recurring,                                           .withCustomer()
+  │     frequency,                                              .withAddress()
+  │     start_date,                                             .execute()
+  │     first_name, last_name,
+  │     email, phone, address         Returns transaction_id + payment_method_id
+  │   }
+  │  ◄── { transactionId, paymentMethodId, customerId, schedule } ──┘
+  │
+  └─ Future charges use paymentMethodId (no card re-entry)
+```
+
+### StoredCredential Flow
+
+The initial charge uses `StoredCredentialType.INSTALLMENT` and `StoredCredentialSequence.FIRST`. All subsequent charges reference the same `paymentMethodId` with `StoredCredentialSequence.SUBSEQUENT`. This meets card network requirements for recurring billing and avoids false fraud declines.
+
+---
+
+## Prerequisites
+
+- Global Payments developer account — [Sign up at developer.globalpay.com](https://developer.globalpay.com)
+- GP API credentials: `APP_ID` and `APP_KEY` (sandbox available after sign-up)
+- A local runtime for your chosen language:
+  - PHP 8.0+ with Composer
+  - Node.js 18+ with npm
+  - .NET 8.0 SDK
+  - Java 17+ with Maven
+
+---
+
+## Quick Start
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/globalpayments-samples/online-recurring-payments.git
+cd online-recurring-payments
+```
+
+### 2. Choose a language and configure credentials
+
+```bash
+cd php       # or nodejs, dotnet, java
+cp .env.sample .env
+```
+
+Edit `.env`:
+
+```env
+APP_ID=your_gp_api_app_id_here
+APP_KEY=your_gp_api_app_key_here
+GP_API_ENVIRONMENT=sandbox
+```
+
+### 3. Install and run
+
+**PHP:**
+```bash
+composer install
+php -S localhost:8000
+```
+Open: http://localhost:8000
+
+**Node.js:**
+```bash
+npm install
+npm start
+```
+Open: http://localhost:8000
+
+**.NET:**
+```bash
+dotnet restore
+dotnet run
+```
+Open: http://localhost:8000
+
+**Java:**
+```bash
+mvn clean package
+mvn cargo:run
+```
+Open: http://localhost:8000
+
+### 4. Test a recurring payment
+
+1. Open the app in your browser
+2. Enter amount (e.g. `25.00`) and select **Recurring**
+3. Fill in customer details (name, email, address)
+4. Choose frequency (e.g. **Monthly**) and a start date
+5. Use a test card from [Test Cards](#test-cards) below
+6. Click **Submit** — note the `paymentMethodId` in the response
+7. That ID can be used for all future recurring charges
+
+---
+
+## API Endpoints
+
+### `GET /config`
+
+Returns a scoped GP API access token for client-side hosted field initialization. Token has `PMT_POST_Create_Single` permission — it can only tokenize cards, not process transactions.
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": {
+    "accessToken": "uua7...."
+  },
+  "message": "Configuration retrieved successfully",
+  "timestamp": "2025-01-15T10:00:00.000Z"
+}
+```
+
+---
+
+### `POST /process-payment`
+
+Processes either a one-time payment or an initial recurring charge with customer data.
+
+#### One-time payment
+
+**Request body:**
+```json
+{
+  "payment_token": "PMT_abc123...",
+  "amount": 25.00,
+  "currency": "USD",
+  "is_recurring": false
+}
+```
+
+**Success response:**
+```json
+{
+  "success": true,
+  "data": {
+    "transaction_id": "TRN_abc123xyz",
+    "amount": 25.00,
+    "currency": "USD",
+    "status": "captured",
+    "message": "Payment processed successfully"
+  }
+}
+```
+
+#### Recurring payment setup
+
+**Request body:**
+```json
+{
+  "payment_token": "PMT_abc123...",
+  "amount": 25.00,
+  "currency": "USD",
+  "is_recurring": true,
+  "frequency": "Monthly",
+  "start_date": "2025-02-01",
+  "first_name": "Jane",
+  "last_name": "Smith",
+  "email": "jane.smith@example.com",
+  "phone": "555-0100",
+  "street_address": "123 Main St",
+  "city": "Atlanta",
+  "state": "GA",
+  "billing_zip": "30301"
+}
+```
+
+**Success response:**
+```json
+{
+  "success": true,
+  "data": {
+    "transaction_id": "TRN_abc123xyz",
+    "payment_method_id": "PMT_stored456",
+    "customer_id": "CUS_789xyz",
+    "amount": 25.00,
+    "currency": "USD",
+    "frequency": "Monthly",
+    "start_date": "2025-02-01",
+    "status": "active",
+    "message": "Initial payment successful. Recurring payment method stored."
+  },
+  "message": "Recurring payment schedule created successfully"
+}
+```
+
+**Supported frequency values:** `Weekly`, `Bi-Weekly`, `Monthly`, `Quarterly`, `Annually`
+
+**Error response (`422`):**
+```json
+{
+  "success": false,
+  "error": "Payment declined: Insufficient funds",
+  "timestamp": "2025-01-15T10:00:00.000Z"
+}
+```
+
+---
+
+## Test Cards
+
+Use these in sandbox (`GP_API_ENVIRONMENT=sandbox`). CVV: `123`. Expiry: any future date.
+
+| Brand | Card Number | Expected Result |
+|-------|-------------|-----------------|
+| Visa | 4263 9826 4026 9299 | Approved |
+| Visa | 4263 9700 0000 5262 | Approved |
+| Mastercard | 5425 2334 2424 1200 | Approved |
+| Discover | 6011 0000 0000 0012 | Approved |
+| Declined | 4000 1200 0000 1154 | Declined |
+
+> Sandbox transactions do not move real money.
+
+---
 
 ## Project Structure
 
 ```
 online-recurring-payments/
-├── dotnet/              # .NET Core implementation
-│   ├── Program.cs       # Main application with payment endpoints
-│   ├── wwwroot/         # Static files
-│   └── README.md        # .NET-specific documentation
-├── java/                # Java implementation
-│   ├── src/             # Java source files
-│   │   └── main/
-│   │       ├── java/    # Java payment processing code
-│   │       └── webapp/  # Web resources
-│   └── README.md        # Java-specific documentation
-├── nodejs/              # Node.js implementation
-│   ├── server.js        # Express server with payment endpoints
-│   ├── paymentUtils.js  # Payment utility functions
-│   └── README.md        # Node.js-specific documentation
-├── php/                 # PHP implementation
-│   ├── config.php       # Configuration and access token endpoint
-│   ├── process-payment.php  # Payment processing endpoint
-│   ├── PaymentUtils.php     # Payment utility class
-│   └── README.md        # PHP-specific documentation
-├── index.html           # Shared frontend example
-├── LICENSE              # Project license
-└── README.md            # This file
+├── index.html                 # Shared frontend (served by all backends)
+├── LICENSE
+├── README.md
+│
+├── php/                       # Port 8000
+│   ├── .env.sample
+│   ├── composer.json
+│   ├── Dockerfile
+│   ├── PaymentUtils.php       # SDK config + shared helpers
+│   ├── config.php             # GET /config endpoint
+│   ├── process-payment.php    # POST /process-payment endpoint
+│   └── run.sh
+│
+├── nodejs/                    # Port 8000
+│   ├── .env.sample
+│   ├── package.json
+│   ├── Dockerfile
+│   ├── server.js              # Express app: /config, /process-payment
+│   ├── paymentUtils.js        # SDK config + recurring helpers
+│   └── run.sh
+│
+├── dotnet/                    # Port 8000
+│   ├── .env.sample
+│   ├── *.csproj
+│   ├── Program.cs             # ASP.NET Core app: all endpoints
+│   ├── Dockerfile
+│   └── wwwroot/               # Static frontend files
+│
+└── java/                      # Port 8000
+    ├── .env.sample
+    ├── pom.xml
+    ├── Dockerfile
+    └── src/
+        └── main/java/com/globalpayments/example/
+            ├── ConfigServlet.java
+            └── ProcessPaymentServlet.java
 ```
 
-## Quick Start
+---
 
-### Prerequisites
+## Environment Variables
 
-- Global Payments account with GP API credentials (APP_ID and APP_KEY)
-- Development environment for your chosen language:
-  - .NET Core 6.0+
-  - Java 11+
-  - Node.js 14.x+
-  - PHP 7.4+
+| Variable | Description | Example |
+|----------|-------------|---------|
+| `APP_ID` | Your GP API application ID | `UJqPrAhrDkGzzNoFInpzKqoI8vfZtGRV` |
+| `APP_KEY` | Your GP API application key | `zCFrbrn0NKly9sB4` |
+| `GP_API_ENVIRONMENT` | `sandbox` for testing, `production` for live | `sandbox` |
 
-### General Setup
+Credentials are available in the [GP Developer Portal](https://developer.globalpay.com) after creating an account.
 
-1. **Choose your language** - Navigate to any implementation directory (dotnet, java, nodejs, php)
+---
 
-2. **Set up credentials** - Copy `.env.sample` to `.env` and add your GP API credentials:
-   ```
-   APP_ID=your_gp_api_app_id_here
-   APP_KEY=your_gp_api_app_key_here
-   GP_API_ENVIRONMENT=sandbox
-   ```
+## Troubleshooting
 
-3. **Install dependencies** - Each directory has its own dependency installation:
-   - .NET: `dotnet restore`
-   - Java: `mvn clean install`
-   - Node.js: `npm install`
-   - PHP: `composer install`
+**`401 Unauthorized` on `/config`**
+Credentials are invalid or for the wrong environment. Verify `APP_ID` and `APP_KEY` in `.env`. Confirm `GP_API_ENVIRONMENT` matches the credential set (sandbox vs production).
 
-4. **Run the server** - Execute `./run.sh` or use language-specific commands
+**`422` — "Payment declined" on initial charge**
+The test card was declined. Try a different card from the [Test Cards](#test-cards) table. Confirm `GP_API_ENVIRONMENT=sandbox` when using test cards.
 
-5. **Test the application** - Open `http://localhost:8000` in your browser
+**Recurring charge returns "Invalid payment method"**
+The `payment_method_id` from the initial charge must be stored and reused in subsequent charges. The stored credential expires if the sandbox session ends — run a new initial charge to get a fresh ID.
 
-### Language-Specific Instructions
+**Missing customer fields validation error**
+Recurring payments require `first_name`, `last_name`, and `email`. `phone`, `street_address`, `city`, `state`, and `billing_zip` are optional but improve auth rates.
 
-See individual README files in each language directory for detailed setup and implementation information.
+**Port 8000 already in use**
+Another process is binding the port. Check with `lsof -i :8000` and stop the conflicting process, or update the port in `run.sh` and the server file.
 
-## Recurring Payment Flow
+**Node.js — `Cannot find module 'globalpayments-api'`**
+Run `npm install` before `npm start`. Confirm Node.js 18+ is installed: `node -v`.
 
-### 1. Frontend Initialization
-- Client loads the page and requests GP API access token from `/config` endpoint
-- Frontend initializes GP API JS SDK with the access token
+**Java build fails**
+Requires Java 17+ and Maven 3.8+. Verify with `java -version` and `mvn -version`. Run `mvn clean package` before `mvn cargo:run`.
 
-### 2. Customer Input
-- User enters card details in GP API secure form
-- User provides customer information (name, email, phone, address)
-- User selects payment frequency and start date
-
-### 3. Tokenization
-- Frontend creates single-use token using GP API JS SDK
-- Card data is tokenized client-side and never reaches your server
-
-### 4. Backend Processing
-- Frontend sends payment data with `is_recurring: true` to `/process-payment`
-- Server creates initial charge with customer data and address
-- Payment method is stored for future recurring charges
-- Server returns recurring schedule details and transaction confirmation
-
-### 5. Future Recurring Charges
-- Use the stored payment method ID for subsequent charges
-- Process recurring payments according to the defined schedule
-- Customer is billed automatically on the scheduled frequency
-
-## API Endpoints
-
-All implementations provide these standardized endpoints:
-
-### GET /config
-Returns GP API access token for client-side SDK initialization.
-
-**Response:**
-```json
-{
-    "success": true,
-    "data": {
-        "accessToken": "xxx"
-    },
-    "message": "Configuration retrieved successfully",
-    "timestamp": "2024-10-21T12:00:00.000Z"
-}
-```
-
-### POST /process-payment
-Processes both one-time and recurring payments.
-
-**Request Parameters (Recurring):**
-- `payment_token` (string, required) - Token from client-side SDK
-- `amount` (number, required) - Payment amount
-- `currency` (string, optional) - Currency code (default: 'USD')
-- `is_recurring` (boolean, required) - Set to true for recurring
-- `frequency` (string, required) - Payment frequency
-- `start_date` (string, required) - Start date (YYYY-MM-DD)
-- `first_name`, `last_name`, `email` (string, required) - Customer info
-- `phone`, `street_address`, `city`, `state`, `billing_zip` (string, optional)
-
-**Response (Success):**
-```json
-{
-    "success": true,
-    "data": {
-        "transaction_id": "TRN_xxx",
-        "payment_method_id": "PMT_xxx",
-        "customer_id": "CUS_xxx",
-        "amount": 25.00,
-        "currency": "USD",
-        "frequency": "Monthly",
-        "start_date": "2024-11-01",
-        "status": "active",
-        "message": "Initial payment successful. Recurring payment method stored."
-    },
-    "message": "Recurring payment schedule created successfully"
-}
-```
-
-## Test Cards (GP API Sandbox)
-
-Use these test cards in the sandbox environment:
-
-**Successful Payment:**
-- Card Number: 4263970000005262
-- CVV: 123
-- Expiry: Any future date
-
-**Declined Payment:**
-- Card Number: 4000120000001154
-- CVV: 123
-- Expiry: Any future date
-
-## Security Considerations
-
-This example demonstrates core implementation. For production use, implement:
-
-- **Input Validation** - Comprehensive validation of all user inputs
-- **Rate Limiting** - Prevent abuse with request rate limiting
-- **Security Headers** - HSTS, CSP, X-Frame-Options, etc.
-- **Logging** - Secure logging with PII protection
-- **Fraud Prevention** - Implement fraud detection measures
-- **HTTPS** - Always use HTTPS in production
-- **Error Handling** - Don't expose sensitive information in error messages
-- **Monitoring** - Implement application performance monitoring
-- **Compliance** - Ensure PCI DSS, GDPR, and other compliance requirements
-
-## Additional Resources
-
-- [Global Payments Developer Hub](https://developer.globalpay.com/)
-- [GP API Documentation](https://developer.globalpay.com/api)
-- [GP API JS SDK](https://github.com/globalpayments/globalpayments-js)
-
-## Support
-
-For issues or questions:
-- Check the [Global Payments Developer Hub](https://developer.globalpay.com/)
-- Review language-specific README files in each directory
-- Contact Global Payments support
+---
 
 ## License
 
-MIT License - see LICENSE file for details
+MIT — see [LICENSE](./LICENSE).
