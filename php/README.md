@@ -70,7 +70,7 @@ Open: http://localhost:8000
 | `APP_KEY` | Your GP API application key | `zCFrbrn0NKly9sB4` |
 | `GP_API_ENVIRONMENT` | `sandbox` for testing, `production` for live | `sandbox` |
 
-Credentials available in the [GP Developer Portal](https://developer.globalpay.com).
+Credentials available in the [GP Developer Portal](https://developer.globalpayments.com).
 
 ---
 

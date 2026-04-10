@@ -59,7 +59,7 @@ The initial charge uses `StoredCredentialType.INSTALLMENT` and `StoredCredential
 
 ## Prerequisites
 
-- Global Payments developer account — [Sign up at developer.globalpay.com](https://developer.globalpay.com)
+- Global Payments developer account — [Sign up at developer.globalpayments.com](https://developer.globalpayments.com)
 - GP API credentials: `APP_ID` and `APP_KEY` (sandbox available after sign-up)
 - A local runtime for your chosen language:
   - PHP 8.0+ with Composer
@@ -307,7 +307,7 @@ online-recurring-payments/
 | `APP_KEY` | Your GP API application key | `zCFrbrn0NKly9sB4` |
 | `GP_API_ENVIRONMENT` | `sandbox` for testing, `production` for live | `sandbox` |
 
-Credentials are available in the [GP Developer Portal](https://developer.globalpay.com) after creating an account.
+Credentials are available in the [GP Developer Portal](https://developer.globalpayments.com) after creating an account.
 
 ---
 
