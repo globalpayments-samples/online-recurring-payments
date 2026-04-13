@@ -1,6 +1,6 @@
 # Online Recurring Payments — GP API
 
-A complete recurring payment implementation using the Global Payments GP API. Developers can set up subscription billing by capturing an initial payment with customer data, tokenizing the card server-side with `StoredCredential`, and scheduling future charges against the stored payment method — without handling raw card numbers at any point.
+A complete recurring payment implementation using the Global Payments GP API. Developers can set up subscription billing by capturing an initial payment with customer data, tokenizing the card server-side with `StoredCredential`, and scheduling future charges against the stored payment method — without handling raw card numbers at any point. All implementations use the official Global Payments SDK (`GpApiConfig`).
 
 Available in four languages: PHP, Node.js, .NET, and Java.
 
