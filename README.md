@@ -246,7 +246,6 @@ Use these in sandbox (`GP_API_ENVIRONMENT=sandbox`). CVV: `123`. Expiry: any fut
 | Brand | Card Number | Expected Result |
 |-------|-------------|-----------------|
 | Visa | 4263 9826 4026 9299 | Approved |
-| Visa | 4263 9700 0000 5262 | Approved |
 | Mastercard | 5425 2334 2424 1200 | Approved |
 | Discover | 6011 0000 0000 0012 | Approved |
 | Declined | 4000 1200 0000 1154 | Declined |
@@ -333,6 +332,35 @@ Run `npm install` before `npm start`. Confirm Node.js 18+ is installed: `node -v
 
 **Java build fails**
 Requires Java 17+ and Maven 3.8+. Verify with `java -version` and `mvn -version`. Run `mvn clean package` before `mvn cargo:run`.
+
+---
+
+## Features
+
+- Process one-time payments using GP API hosted fields
+- Process recurring payments with `StoredCredential` — no card re-entry after the initial charge
+- 4-language implementations (PHP, Node.js, .NET, Java)
+- Docker support with per-language containers
+
+---
+
+## Security Considerations
+
+- Store credentials in `.env` files, never commit to source control
+- API keys are never exposed to the frontend
+- All payment processing happens server-side
+- Use HTTPS in production
+- Stored credentials must comply with card network rules
+
+---
+
+## Resources
+
+- [Global Payments Developer Portal](https://developer.globalpayments.com/)
+- [GP-API Reference](https://developer.globalpayments.com/api/references-overview)
+- [Test Cards](https://developer.globalpayments.com/resources/test-cards)
+
+---
 
 ## Community
 
