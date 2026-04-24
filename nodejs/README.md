@@ -206,7 +206,6 @@ Use these in sandbox (`GP_API_ENVIRONMENT=sandbox`). CVV: `123`. Expiry: any fut
 | Brand | Card Number | Expected Result |
 |-------|-------------|-----------------|
 | Visa | 4263 9826 4026 9299 | Approved |
-| Visa | 4263 9700 0000 5262 | Approved |
 | Mastercard | 5425 2334 2424 1200 | Approved |
 | Discover | 6011 0000 0000 0012 | Approved |
 | Declined | 4000 1200 0000 1154 | Declined |
