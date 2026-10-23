@@ -8,7 +8,7 @@ Part of the [online-recurring-payments](../) multi-language project.
 
 ## Requirements
 
-- PHP 8.0+
+- PHP 8.2.35+, 8.3.36+, 8.4.27+, or 8.5.12+ for the web server
 - Composer
 - Global Payments GP API credentials (`APP_ID` + `APP_KEY`)
 
@@ -53,7 +53,7 @@ composer install
 Start the server:
 
 ```bash
-php -S localhost:8000
+./run.sh
 # or
 ./run.sh
 ```
@@ -239,7 +239,7 @@ The `payment_method_id` from the initial charge must be stored by your applicati
 Run `composer install` — vendor autoloader not generated yet.
 
 **PHP version mismatch**
-Requires PHP 8.0+. Check with `php -v`. Use the Docker container if local PHP is older.
+Requires PHP 8.2.35+, 8.3.36+, 8.4.27+, or 8.5.12+ for the web server. Check with `php -v` or use the Docker container.
 
 **Port 8000 already in use**
 Check with `lsof -i :8000` and stop the conflicting process, or change the port in `run.sh`.
