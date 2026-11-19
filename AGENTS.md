@@ -112,7 +112,7 @@ This is demo code, not a production subscription platform. Node.js and PHP expli
 - PHP — `cd php && ./run.sh` → installs Composer packages and serves `http://localhost:8000` by default.
 - Node.js — `cd nodejs && ./run.sh` → installs npm packages and serves `http://localhost:8000` by default.
 - .NET — `cd dotnet && ./run.sh` → restores packages and runs on `http://localhost:8000` by default; the project targets `net10.0`, so use a .NET 10 SDK.
-- Java — `cd java && ./run.sh` → runs `mvn clean package cargo:run` and serves `http://localhost:8000`; `pom.xml` sets `maven.compiler.release` to `23`, so you need a JDK that supports Java 23.
+- Java — `cd java && ./run.sh` → runs `mvn clean package cargo:run` and serves `http://localhost:8000`; `pom.xml` sets `maven.compiler.release` to `21`, so you need a JDK that supports Java 21.
 - Browser requirement — every implementation uses hosted fields in `index.html`, so you need a real browser to generate a `payment_token` before the payment endpoint can succeed.
 
 ## How to Verify

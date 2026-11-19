@@ -65,7 +65,7 @@ The initial charge uses `StoredCredentialType.INSTALLMENT` and `StoredCredential
   - PHP 8.2.35+, 8.3.36+, 8.4.27+, or 8.5.12+ with Composer
   - Node.js 24+ with npm
   - .NET 10.0 SDK
-  - Java 17+ with Maven
+  - Java 21+ with Maven
 
 ---
 
@@ -330,7 +330,7 @@ Another process is binding the port. Check with `lsof -i :8000` and stop the con
 Run `npm install` before `npm start`. Confirm Node.js 24+ is installed: `node -v`.
 
 **Java build fails**
-Requires Java 17+ and Maven 3.8+. Verify with `java -version` and `mvn -version`. Run `mvn clean package` before `mvn cargo:run`.
+Requires Java 21+ and Maven 3.8+. Verify with `java -version` and `mvn -version`. Run `mvn clean package` before `mvn cargo:run`.
 
 ---
 
