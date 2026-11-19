@@ -8,7 +8,7 @@ Part of the [online-recurring-payments](../) multi-language project.
 
 ## Requirements
 
-- Node.js 18+
+- Node.js 24+
 - npm
 - Global Payments GP API credentials (`APP_ID` + `APP_KEY`)
 
@@ -241,7 +241,7 @@ Run `npm install` before starting the server.
 Recurring mode requires `frequency` and `start_date` in addition to customer fields.
 
 **ES module import errors**
-Package uses ESM (`import`/`export`). Requires Node.js 18+. Check with `node -v`.
+Package uses ESM (`import`/`export`). Requires Node.js 24+. Check with `node -v`.
 
 **Port 8000 already in use**
 Check with `lsof -i :8000` and stop the conflicting process, or change the port in `run.sh`.
