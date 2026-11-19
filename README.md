@@ -64,7 +64,7 @@ The initial charge uses `StoredCredentialType.INSTALLMENT` and `StoredCredential
 - A local runtime for your chosen language:
   - PHP 8.2.35+, 8.3.36+, 8.4.27+, or 8.5.12+ with Composer
   - Node.js 18+ with npm
-  - .NET 8.0 SDK
+  - .NET 10.0 SDK
   - Java 17+ with Maven
 
 ---

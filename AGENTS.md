@@ -32,7 +32,7 @@
 - [`dotnet/wwwroot/index.html`](dotnet/wwwroot/index.html) — hosted-fields frontend; fetches `/config`, tokenizes in the browser, then posts to `/process-payment`.
 - [`dotnet/run.sh`](dotnet/run.sh) — runs `dotnet restore` and `dotnet run`.
 - [`dotnet/.env.sample`](dotnet/.env.sample) — sample GP API credentials.
-- [`dotnet/dotnet.csproj`](dotnet/dotnet.csproj) — targets `net9.0` and references `GlobalPayments.Api`.
+- [`dotnet/dotnet.csproj`](dotnet/dotnet.csproj) — targets `net10.0` and references `GlobalPayments.Api`.
 - [`dotnet/appsettings.json`](dotnet/appsettings.json) — ASP.NET config stub; payment configuration is still read from environment variables.
 
 ### Java (Jakarta Servlet)
@@ -111,7 +111,7 @@ This is demo code, not a production subscription platform. Node.js and PHP expli
 
 - PHP — `cd php && ./run.sh` → installs Composer packages and serves `http://localhost:8000` by default.
 - Node.js — `cd nodejs && ./run.sh` → installs npm packages and serves `http://localhost:8000` by default.
-- .NET — `cd dotnet && ./run.sh` → restores packages and runs on `http://localhost:8000` by default; the project targets `net9.0`, so use a .NET 9 SDK.
+- .NET — `cd dotnet && ./run.sh` → restores packages and runs on `http://localhost:8000` by default; the project targets `net10.0`, so use a .NET 10 SDK.
 - Java — `cd java && ./run.sh` → runs `mvn clean package cargo:run` and serves `http://localhost:8000`; `pom.xml` sets `maven.compiler.release` to `23`, so you need a JDK that supports Java 23.
 - Browser requirement — every implementation uses hosted fields in `index.html`, so you need a real browser to generate a `payment_token` before the payment endpoint can succeed.
 
