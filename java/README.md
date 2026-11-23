@@ -8,7 +8,7 @@ Part of the [online-recurring-payments](../) multi-language project.
 
 ## Requirements
 
-- Java 17+
+- Java 21+
 - Maven 3.8+
 - Global Payments GP API credentials (`APP_ID` + `APP_KEY`)
 
@@ -233,7 +233,7 @@ Recurring mode requires `frequency` and `start_date`. Customer fields `first_nam
 The `payment_method_id` from the initial charge must be stored by your application. Sandbox stored credentials expire when the session ends — run a new initial charge to get a fresh ID.
 
 **Java version mismatch**
-Requires Java 17+. Check with `java -version`. Use the Docker container if local JDK is older.
+Requires Java 21+. Check with `java -version`. Use the Docker container if local JDK is older.
 
 **Maven version mismatch**
 Requires Maven 3.8+. Check with `mvn -version`.

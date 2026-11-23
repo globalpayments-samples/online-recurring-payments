@@ -8,7 +8,7 @@ Part of the [online-recurring-payments](../) multi-language project.
 
 ## Requirements
 
-- .NET 8.0 SDK
+- .NET 10.0 SDK
 - Global Payments GP API credentials (`APP_ID` + `APP_KEY`)
 
 ---
@@ -244,4 +244,4 @@ The `payment_method_id` from the initial charge must be stored by your applicati
 Override the port: `dotnet run --urls http://localhost:9000`. Update the Docker port mapping accordingly.
 
 **.NET version mismatch**
-Requires .NET 8.0 SDK. Check with `dotnet --version`. Use the Docker container if local SDK is older.
+Requires .NET 10.0 SDK. Check with `dotnet --version`. Use the Docker container if local SDK is older.
