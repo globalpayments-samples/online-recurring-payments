@@ -96,12 +96,12 @@ public class Program
                 if (!jsonBody.TryGetProperty("payment_token", out var tokenElement) ||
                     string.IsNullOrWhiteSpace(tokenElement.GetString()))
                 {
-                    throw new Exception("Missing required field: payment_token");
+                    throw new ApiException("Missing required field: payment_token");
                 }
 
                 if (!jsonBody.TryGetProperty("amount", out var amountElement))
                 {
-                    throw new Exception("Missing required field: amount");
+                    throw new ApiException("Missing required field: amount");
                 }
 
                 var paymentToken = tokenElement.GetString()!;
@@ -111,7 +111,7 @@ public class Program
 
                 if (amount <= 0)
                 {
-                    throw new Exception("Invalid amount");
+                    throw new ApiException("Invalid amount");
                 }
 
                 if (isRecurring)
@@ -122,7 +122,7 @@ public class Program
                         if (!jsonBody.TryGetProperty(field, out var fieldEl) ||
                             string.IsNullOrWhiteSpace(fieldEl.GetString()))
                         {
-                            throw new Exception($"Missing required field: {field}");
+                            throw new ApiException($"Missing required field: {field}");
                         }
                     }
 
@@ -261,7 +261,7 @@ public class Program
                         .Execute();
 
                     if (response.ResponseCode == "SUCCESS" &&
-                        response.ResponseMessage == TransactionStatus.Captured.ToString())
+                        response.ResponseMessage == "CAPTURED")
                     {
                         return Results.Ok(new
                         {
