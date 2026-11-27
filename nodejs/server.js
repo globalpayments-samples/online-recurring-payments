@@ -17,7 +17,8 @@ import {
     GpApiConfig,
     Environment,
     Channel,
-    GpApiService
+    GpApiService,
+    ApiError
 } from 'globalpayments-api';
 import {
     configureSdk,
@@ -187,7 +188,7 @@ app.post('/process-payment', async (req, res) => {
         console.error('Payment processing error:', error.message);
 
         // Determine if this is an API error or general error
-        if (error.name === 'ApiError' || error.message.includes('API')) {
+        if (error instanceof ApiError) {
             sendErrorResponse(res, 400, `Payment processing failed: ${error.message}`, 'API_ERROR');
         } else {
             sendErrorResponse(res, 500, `Server error: ${error.message}`, 'SERVER_ERROR');
@@ -206,6 +207,14 @@ app.get('/health', (req, res) => {
         service: 'recurring-payments-api',
         timestamp: new Date().toISOString()
     }, 'Service is healthy');
+});
+
+// Answer a malformed JSON body with JSON instead of the default HTML error page
+app.use((err, req, res, next) => {
+    if (err.type === 'entity.parse.failed') {
+        return sendErrorResponse(res, 400, 'Invalid JSON body', 'VALIDATION_ERROR');
+    }
+    next(err);
 });
 
 // Start the server

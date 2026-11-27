@@ -154,7 +154,7 @@ export async function processPaymentWithToken(token, amount, currency, billingDa
             .execute();
 
         if (response.responseCode === 'SUCCESS' &&
-            response.responseMessage === TransactionStatus.Captured) {
+            response.responseMessage === TransactionStatus.CAPTURED) {
 
             return {
                 transaction_id: response.transactionId || `txn_${Date.now()}`,
