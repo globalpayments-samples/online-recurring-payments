@@ -180,6 +180,7 @@ public class Program
                         .WithAddress(address)
                         .WithCustomerData(customer)
                         .WithStoredCredential(storedCredential)
+                        .WithRequestMultiUseToken(true)
                         .Execute();
 
                     if (response.ResponseCode == "SUCCESS" &&
@@ -202,7 +203,8 @@ public class Program
                             data = new
                             {
                                 transaction_id = response.TransactionId ?? $"txn_{Guid.NewGuid():N}",
-                                payment_method_id = response.CardBrandTransactionId ?? paymentToken,
+                                payment_method_id = response.Token,
+                                card_brand_transaction_id = response.CardBrandTransactionId,
                                 customer_id = $"CUS_{Guid.NewGuid():N}",
                                 amount = amount.ToString("F2"),
                                 currency = currency,
