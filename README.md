@@ -244,9 +244,9 @@ Use these in sandbox (`GP_API_ENVIRONMENT=sandbox`). CVV: `123`. Expiry: any fut
 
 | Brand | Card Number | Expected Result |
 |-------|-------------|-----------------|
-| Visa | 4263 9826 4026 9299 | Approved |
-| Mastercard | 5425 2334 2424 1200 | Approved |
-| Discover | 6011 0000 0000 0012 | Approved |
+| Visa | 4263 9700 0000 5262 | Approved |
+| Mastercard | 5425 2300 0000 4415 | Approved |
+| Discover | 6011 0000 0000 0087 | Approved |
 | Declined | 4000 1200 0000 1154 | Declined |
 
 > Sandbox transactions do not move real money.
@@ -257,7 +257,6 @@ Use these in sandbox (`GP_API_ENVIRONMENT=sandbox`). CVV: `123`. Expiry: any fut
 
 ```
 online-recurring-payments/
-├── index.html                 # Shared frontend (served by all backends)
 ├── LICENSE
 ├── README.md
 │
@@ -291,8 +290,8 @@ online-recurring-payments/
     ├── Dockerfile
     └── src/
         └── main/java/com/globalpayments/example/
-            ├── ConfigServlet.java
-            └── ProcessPaymentServlet.java
+            ├── PaymentUtils.java          # SDK config + recurring helpers
+            └── ProcessPaymentServlet.java # /config and /process-payment
 ```
 
 ---
