@@ -224,7 +224,7 @@ class PaymentUtils
     /**
      * Send error response
      */
-    public static function sendErrorResponse(int $statusCode, string $message, string $errorCode = null): void
+    public static function sendErrorResponse(int $statusCode, string $message, ?string $errorCode = null): void
     {
         http_response_code($statusCode);
 
