@@ -53,7 +53,7 @@ Browser
 
 ### StoredCredential Flow
 
-The initial charge uses `StoredCredentialType.INSTALLMENT` and `StoredCredentialSequence.FIRST`. All subsequent charges reference the same `paymentMethodId` with `StoredCredentialSequence.SUBSEQUENT`. This meets card network requirements for recurring billing and avoids false fraud declines.
+The initial charge is sent as the cardholder initiated first payment of a recurring series (`StoredCredentialType` Recurring, `StoredCredentialSequence` First) and asks GP API to store the card with `withRequestMultiUseToken(true)`. The response `payment_method_id` is that stored multi-use `PMT_` token and `card_brand_transaction_id` is the card scheme reference of the first charge. Later merchant initiated charges use both, with `StoredCredentialSequence` Subsequent. This meets card network requirements for recurring billing and avoids false fraud declines.
 
 ---
 
@@ -213,6 +213,7 @@ Processes either a one-time payment or an initial recurring charge with customer
   "data": {
     "transaction_id": "TRN_abc123xyz",
     "payment_method_id": "PMT_stored456",
+    "card_brand_transaction_id": "nklLZg7cu0PhCqxP",
     "customer_id": "CUS_789xyz",
     "amount": 25.00,
     "currency": "USD",

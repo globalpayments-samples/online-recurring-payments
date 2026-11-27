@@ -80,6 +80,7 @@ public class PaymentUtils {
                 .withAddress(address)
                 .withCustomerData(customer)
                 .withStoredCredential(storedCredential)
+                .withRequestMultiUseToken(true)
                 .execute();
 
         if ("SUCCESS".equals(response.getResponseCode()) &&
@@ -98,8 +99,10 @@ public class PaymentUtils {
             JSONObject data = new JSONObject();
             data.put("transaction_id", response.getTransactionId() != null ?
                     response.getTransactionId() : "txn_" + UUID.randomUUID().toString().replace("-", ""));
-            data.put("payment_method_id", response.getCardBrandTransactionId() != null ?
-                    response.getCardBrandTransactionId() : token);
+            data.put("payment_method_id", response.getToken() != null ?
+                    response.getToken() : JSONObject.NULL);
+            data.put("card_brand_transaction_id", response.getCardBrandTransactionId() != null ?
+                    response.getCardBrandTransactionId() : JSONObject.NULL);
             data.put("customer_id", "CUS_" + UUID.randomUUID().toString().replace("-", ""));
             data.put("amount", amount.toString());
             data.put("currency", currency);

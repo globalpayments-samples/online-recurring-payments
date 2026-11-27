@@ -5,7 +5,7 @@
 ## Critical Patterns
 
 1. **Recurring mode is an enrollment step, not a scheduler.** All four implementations accept recurring fields, run an initial charge, and return token metadata, but none of them persist a billing schedule or trigger future charges on their own. If you need real subscription renewals, store `payment_method_id` in your own system and build the follow-up billing job yourself.
-2. **Stored-credential handling is not identical across languages.** PHP (`PaymentUtils::createRecurringSchedule()`), Java (`PaymentUtils.createRecurringSchedule()`), and .NET (the recurring branch inside `ConfigureEndpoints()`) attach `StoredCredential` with `Recurring` + `First`; Node.js `createRecurringSchedule()` in `nodejs/paymentUtils.js` does not call `withStoredCredential()` at all. Do not assume a fix in one language automatically preserves card-network recurring semantics in the others.
+2. **The initial recurring charge stores the card.** PHP (`PaymentUtils::createRecurringSchedule()`), Java (`PaymentUtils.createRecurringSchedule()`), Node.js (`createRecurringSchedule()` in `nodejs/paymentUtils.js`, via `withStoredCredentials()`), and .NET (the recurring branch inside `ConfigureEndpoints()`) all attach `StoredCredential` with cardholder initiator, `Recurring` + `First`, and request a multi-use token. `payment_method_id` is the stored `PMT_` token from the response and `card_brand_transaction_id` is the scheme reference; never fall back to the single-use hosted-fields token or the scheme reference as the payment method. Keep the four languages in step when changing this.
 3. **`GP_API_ENVIRONMENT` does not fully switch the charge path to production.** Node.js, PHP, Java, and .NET all hard-code the SDK config to `Environment.TEST` / `GpEnvironment.TEST` in their payment flows. Java only uses `GP_API_ENVIRONMENT` to pick the `/ucp/accesstoken` URL in `ProcessPaymentServlet.doGet()`, and Node/.NET only log it.
 4. **The frontend and route shape vary by language.** PHP serves `config.php` and `process-payment.php`; Node.js and .NET use `/config` and `/process-payment`; Java uses `/config` and `/process-payment` through `ProcessPaymentServlet`; Node.js alone adds `/health`. Update the matching frontend file in each language directory when changing endpoint names.
 
@@ -101,7 +101,7 @@ Java's `GET /config` path builds the access token request manually in `ProcessPa
 
 **One-time payment:** browser posts `payment_token`, amount, currency, and optional billing ZIP → `processPaymentWithToken()` or the .NET inline one-time branch → `card.charge(...).execute()` → JSON response with transaction data.
 
-**Recurring enrollment:** browser posts recurring fields plus customer details → `createRecurringSchedule()` or the .NET inline recurring branch → initial charge (with stored credential in PHP/Java/.NET only) → app returns `payment_method_id`, synthetic `customer_id`, and echoed schedule fields for the caller to persist.
+**Recurring enrollment:** browser posts recurring fields plus customer details → `createRecurringSchedule()` or the .NET inline recurring branch → initial charge with stored credential and a multi-use token request → app returns the stored `payment_method_id`, `card_brand_transaction_id`, synthetic `customer_id`, and echoed schedule fields for the caller to persist.
 
 ## Security Notes
 

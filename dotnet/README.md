@@ -172,6 +172,7 @@ Generates a scoped access token for client-side hosted fields initialization.
   "data": {
     "transaction_id": "TRN_abc123xyz",
     "payment_method_id": "PMT_stored456",
+    "card_brand_transaction_id": "nklLZg7cu0PhCqxP",
     "customer_id": "CUS_789xyz",
     "amount": 25.00,
     "currency": "USD",
@@ -198,7 +199,7 @@ Supported `frequency` values: `Weekly`, `Bi-Weekly`, `Monthly`, `Quarterly`, `An
 
 ## StoredCredential Flow
 
-The initial charge attaches `StoredCredential` with `StoredCredentialType.Installment` and `StoredCredentialSequence.First`. Future charges reference the returned `paymentMethodId` with `StoredCredentialSequence.Subsequent`. This meets card network requirements for recurring billing and avoids false fraud declines.
+The initial charge attaches `StoredCredential` with `StoredCredentialInitiator.CardHolder`, `StoredCredentialType.Recurring` and `StoredCredentialSequence.First`, and calls `WithRequestMultiUseToken(true)` so GP API stores the card. The returned `payment_method_id` is the stored multi-use `PMT_` token and `card_brand_transaction_id` is the scheme reference of the first charge. Future charges use both with `StoredCredentialSequence.Subsequent`. This meets card network requirements for recurring billing and avoids false fraud declines.
 
 ---
 

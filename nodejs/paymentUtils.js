@@ -15,6 +15,10 @@ import {
     CreditCardData,
     Channel,
     Environment,
+    StoredCredential,
+    StoredCredentialInitiator,
+    StoredCredentialSequence,
+    StoredCredentialType,
     TransactionStatus
 } from 'globalpayments-api';
 
@@ -83,12 +87,20 @@ export async function createRecurringSchedule(token, amount, currency, scheduleD
         address.postalCode = sanitizePostalCode(customerData.billing_zip || '');
         address.countryCode = 'US';
 
-        // For recurring payments, we'll process an initial charge to validate the payment method
-        // and store the card for future use. The recurring flag is maintained in application logic.
+        // Mark this as the first payment of a cardholder initiated recurring series
+        const storedCredential = new StoredCredential();
+        storedCredential.initiator = StoredCredentialInitiator.CardHolder;
+        storedCredential.type = StoredCredentialType.RECURRING;
+        storedCredential.sequence = StoredCredentialSequence.FIRST;
+
+        // Charge the first payment and ask GP API to store the card, so the
+        // response carries a multi-use payment method for the later charges
         const response = await card.charge(amount)
             .withCurrency(currency)
             .withAddress(address)
             .withCustomerData(customer)
+            .withStoredCredentials(storedCredential)
+            .withRequestMultiUseToken(true)
             .execute();
 
         if (response.responseCode === 'SUCCESS' &&
@@ -107,7 +119,8 @@ export async function createRecurringSchedule(token, amount, currency, scheduleD
 
             return {
                 transaction_id: response.transactionId || `txn_${Date.now()}`,
-                payment_method_id: response.cardBrandTransactionId || token,
+                payment_method_id: response.token || null,
+                card_brand_transaction_id: response.cardBrandTransactionId || null,
                 customer_id: `CUS_${Date.now()}`,
                 amount: amount,
                 currency: currency,
